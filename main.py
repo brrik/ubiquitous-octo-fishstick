@@ -20,9 +20,8 @@ with st.form(key='iken_form', clear_on_submit=True):
     submit_btn = st.form_submit_button('投稿')
     if submit_btn:
         st.text(f'投稿完了しました！')
-        st.text_area('投稿された内容確認', value=comment, height=150, max_chars=1000)
-
-
+        st.text(f'投稿内容確認')
+        st.text(f'{comment}')
 
         url = "https://pythonapi-egwh.onrender.com/postdata/"
         data = {
