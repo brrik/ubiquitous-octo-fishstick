@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+from kanjobunseki import analyze_sentiment
 
 #タイトル
 st.title('ご意見投稿フォーム')
@@ -10,7 +11,7 @@ with st.form(key='iken_form', clear_on_submit=True):
     #役職ラジオボックス 第一引数でタイトル。第二引数でボタン名
     yakusyoku = st.radio(
         '投稿したい役職を選択してください',
-        ('社長','事業部長','部長','課長','GL','その他')
+        ('社長','事業部長','部長','課長','GL')
     )
 
     #入力ボックス
@@ -19,14 +20,25 @@ with st.form(key='iken_form', clear_on_submit=True):
     #送信ボタン
     submit_btn = st.form_submit_button('投稿')
     if submit_btn:
+        #ここで感情分析する
+        if __name__ == '__main__':
+            sentiment_scores, predicted_sentiment = analyze_sentiment(comment)
 
+        #本番url = "https://pythonapi-egwh.onrender.com/postdata/"
+        #テストurl = "https://altxfastapi-test.onrender.com/postdata/"        
         url = "https://pythonapi-egwh.onrender.com/postdata/"
         data = {
             "roll": yakusyoku,
-            "data": comment
+            "data": comment,
+            "sentiment": predicted_sentiment,
+            "sentiment_score_spnegative": sentiment_scores['非常にネガティブ'],
+            "sentiment_score_negative": sentiment_scores['ネガティブ'],
+            "sentiment_score_neutral": sentiment_scores['ニュートラル'],
+            "sentiment_score_positive": sentiment_scores['ポジティブ'],
+            "sentiment_score_sppositive": sentiment_scores['非常にポジティブ']
         }
         response = requests.post(url, json=data)
-
+        
         if response.status_code == 200:
             st.success(f'投稿完了しました！')
             st.text(f'投稿内容確認')
