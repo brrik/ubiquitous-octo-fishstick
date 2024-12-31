@@ -1,21 +1,21 @@
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
-import MeCab
+from janome.tokenizer import Tokenizer  # Janomeのインポート
 
 def analyze_sentiment(text):
-    # Mecabの設定（日本語テキストを分かち書き）
-    mecab = MeCab.Tagger("-Owakati")  # 分かち書きモード
+    # Janomeの設定（日本語テキストを分かち書き）
+    tokenizer = Tokenizer()  # Janomeのトークナイザーをインスタンス化
+    
+    # Janomeで分かち書き
+    wakati_text = ' '.join([token.surface for token in tokenizer.tokenize(text)])
     
     # 日本語感情分析用のモデルとトークナイザーの準備
     model_name = "nlptown/bert-base-multilingual-uncased-sentiment"
-    tokenizer = BertTokenizer.from_pretrained(model_name)
+    tokenizer_bert = BertTokenizer.from_pretrained(model_name)
     model = BertForSequenceClassification.from_pretrained(model_name)
 
-    # Mecabで分かち書き
-    wakati_text = mecab.parse(text).strip()
-
     # トークナイズ
-    inputs = tokenizer(wakati_text, return_tensors='pt', truncation=True, padding=True)
+    inputs = tokenizer_bert(wakati_text, return_tensors='pt', truncation=True, padding=True)
 
     # 推論
     with torch.no_grad():
@@ -37,7 +37,7 @@ def analyze_sentiment(text):
 if __name__ == '__main__':
     # 分析する日本語のテキスト
     texts = [
-        "おつかれさまです。メリークリスマス。。",
+        "今日はとてもいい日だ",
     ]
 
     for text in texts:
