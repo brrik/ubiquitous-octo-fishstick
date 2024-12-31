@@ -1,3 +1,0 @@
-mecab
-mecab-ipadic-utf8
-mecab-ipadic
